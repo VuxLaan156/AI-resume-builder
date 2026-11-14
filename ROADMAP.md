@@ -11,10 +11,13 @@ The frontend can ask the API for its health status. The API does not yet save re
 
 ## 1. Prepare the local environment
 
-- [ ] Review and commit the current repository cleanup on its own.
-- [ ] Keep your working copy of `infrastructure/.env`, add that path to `.gitignore`, and untrack it with `git rm --cached -- infrastructure/.env`. Add `infrastructure/.env.example` with placeholder values and document how to copy it for local setup. Rotate the PostgreSQL password if the committed value is used outside local development.
-- [ ] Start PostgreSQL from the repository root with `docker compose -f infrastructure/docker-compose.yml up -d postgres`. Check its status with `docker compose -f infrastructure/docker-compose.yml ps postgres`.
-- [ ] Start FastAPI with `python -m uvicorn backend.app.main:app --reload` using your activated Python environment. In a second terminal, run `npm run dev` from `frontend`. Open `http://localhost:5173` and confirm the page displays a healthy backend.
+Run commands from the repository root in PowerShell.
+
+1. Install Python 3.13, Node.js 24 and Docker Desktop. If `.venv` is missing, create it with `py -3.13 -m venv .venv`. Install backend dependencies with `.\.venv\Scripts\python.exe -m pip install -r backend/requirements.txt` and check them with `.\.venv\Scripts\python.exe -m pip check`. Install frontend dependencies with `npm.cmd --prefix frontend ci`.
+2. If `infrastructure/.env` is missing, run `Copy-Item infrastructure/.env.example infrastructure/.env` and set your local `POSTGRES_PASSWORD`. If the previously committed password is used elsewhere, rotate it there. Existing PostgreSQL volumes keep their original database password.
+3. Start Docker Desktop. Run `docker compose -f infrastructure/docker-compose.yml up -d --wait`. PostgreSQL listens on localhost port 15432, and Qdrant uses 16333 for HTTP and 16334 for gRPC by default. Override the ports in `infrastructure/.env` if needed. Verify PostgreSQL with `docker compose -f infrastructure/docker-compose.yml exec -T postgres psql -U resume_user -d resume_db -c "SELECT 1;"` and Qdrant with `Invoke-RestMethod http://127.0.0.1:16333/readyz`.
+4. Start FastAPI with `.\.venv\Scripts\python.exe -m uvicorn backend.app.main:app --reload`. From a second terminal run `npm.cmd --prefix frontend run dev`. Open the URL Vite prints and confirm **Backend status: healthy**. Vite forwards `/api/health` to port 8000. A deployed frontend needs equivalent `/api` routing.
+5. Run `npm.cmd --prefix frontend run lint` and `npm.cmd --prefix frontend run build` before merging.
 
 ## 2. Save and retrieve one resume
 
