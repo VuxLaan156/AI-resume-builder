@@ -1,1 +1,5 @@
 .venv
+.venv-old
+__pycache__/
+*.py[cod]
+/infrastructure/.env
