@@ -14,6 +14,8 @@ app.add_middleware(
 @app.get("/")
 def root():
     return {"message": "Welcome to the AI resume builder API!"}
+
+@app.get("/health")
 def health_check():
     return {"status": "healthy"}
 
