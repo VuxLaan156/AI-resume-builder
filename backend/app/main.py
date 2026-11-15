@@ -1,8 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .api.achievements import router as achievements_router
+from .api.certifications import router as certifications_router
+from .api.education import router as education_router
+from .api.experience import router as experience_router
 from .api.health import router as health_router
 from .api.profiles import router as profiles_router
+from .api.projects import router as projects_router
+from .api.skills import router as skills_router
 
 app = FastAPI(title = "AI resume builder", description = "AI resume builder is a web application that allows users to create professional resumes using artificial intelligence. The application uses natural language processing and machine learning algorithms to analyze user input and generate a customized resume that highlights the user's skills and experience.", version = "1.0.0")
 app.add_middleware(
@@ -17,3 +23,9 @@ app.add_middleware(
 
 app.include_router(health_router)
 app.include_router(profiles_router)
+app.include_router(projects_router)
+app.include_router(skills_router)
+app.include_router(education_router)
+app.include_router(experience_router)
+app.include_router(certifications_router)
+app.include_router(achievements_router)
