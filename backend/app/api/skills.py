@@ -10,7 +10,6 @@ from ..models.skill import Skill
 from ..schemas.skill import SkillCreate, SkillRead, SkillUpdate
 from .dependencies import DatabaseSession
 from .profiles import CurrentUser, find_profile
-
 router = APIRouter(prefix="/profiles/me/skills", tags=["skills"])
 
 
