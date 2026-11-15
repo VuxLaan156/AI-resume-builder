@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .api.achievements import router as achievements_router
 from .api.certifications import router as certifications_router
+from .api.documents import router as documents_router
 from .api.education import router as education_router
 from .api.experience import router as experience_router
 from .api.health import router as health_router
@@ -29,3 +30,4 @@ app.include_router(education_router)
 app.include_router(experience_router)
 app.include_router(certifications_router)
 app.include_router(achievements_router)
+app.include_router(documents_router)
