@@ -1,7 +1,7 @@
 from alembic import context
 from sqlalchemy import create_engine, pool
 
-from backend.app.database import get_database_url
+from backend.app.db.session import get_database_url
 
 
 if context.is_offline_mode():

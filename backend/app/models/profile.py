@@ -5,7 +5,7 @@ from sqlalchemy import ForeignKey, Text, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from ..database import Base
+from ..db.session import Base
 
 
 class User(Base):
