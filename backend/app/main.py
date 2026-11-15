@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .api.health import router as health_router
+from .api.profiles import router as profiles_router
 
 app = FastAPI(title = "AI resume builder", description = "AI resume builder is a web application that allows users to create professional resumes using artificial intelligence. The application uses natural language processing and machine learning algorithms to analyze user input and generate a customized resume that highlights the user's skills and experience.", version = "1.0.0")
 app.add_middleware(
@@ -15,3 +16,4 @@ app.add_middleware(
 )
 
 app.include_router(health_router)
+app.include_router(profiles_router)
