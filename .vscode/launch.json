@@ -1,0 +1,50 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "pythonArgs": ["-X", "utf8"]
+        },
+        {
+            "name": "Python: Run Module",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "${input:pythonModule}",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "pythonArgs": ["-X", "utf8"]
+        },
+        {
+            "name": "Test PDF Extractor",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "backend.app.services.test",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "pythonArgs": ["-X", "utf8"]
+        },
+        {
+            "name": "FastAPI Backend",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": ["backend.app.main:app"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "pythonArgs": ["-X", "utf8"]
+        }
+    ],
+    "inputs": [
+        {
+            "id": "pythonModule",
+            "type": "promptString",
+            "description": "Dotted Python module name",
+            "default": "backend.app.services.test"
+        }
+    ]
+}
