@@ -253,6 +253,35 @@ The intended relationships include:
 Exact optionality, uniqueness, and foreign-key placement must be
 finalized in the ERD before database migrations are created.
 
+### Apply the local schema
+
+From the repository root, set `POSTGRES_PASSWORD` in `infrastructure/.env`
+using `infrastructure/.env.example` as a starting point. With Docker
+Desktop running and the backend dependencies installed, run:
+
+```powershell
+docker compose -f infrastructure/docker-compose.yml up -d --wait postgres
+.\.venv\Scripts\python.exe -m alembic upgrade head
+.\.venv\Scripts\python.exe -m alembic current
+```
+
+Alembic uses the local Compose settings by default. Set `DATABASE_URL` in
+the shell to use a different SQLAlchemy PostgreSQL connection URL.
+The migrations create profiles first, then documents and review records,
+then job descriptions, templates, and resumes.
+
+A job description may link to one uploaded JD owned by the same user.
+A resume may link to a job description owned by the same user and always
+requires a template. Deleting the linked JD or source document clears the
+optional reference. Deleting a document removes its chunk metadata and
+extracted proposals. The upload service must clean up the original file
+and Qdrant points separately.
+
+Extracted data starts as a pending proposal. The application must review it
+before applying changes to a profile and enforce ownership on reads and
+writes. The chunk point ID stays empty until indexing. A completed resume
+requires a stored content snapshot and generation time.
+
 ### 6.3 PostgreSQL and Qdrant Responsibilities
 
 **PostgreSQL** stores authoritative structured data, including user
