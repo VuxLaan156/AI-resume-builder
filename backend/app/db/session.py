@@ -15,7 +15,7 @@ def get_database_url() -> str | URL:
     if database_url := os.environ.get("DATABASE_URL"):
         return database_url
 
-    env_file = Path(__file__).resolve().parents[2] / "infrastructure/.env"
+    env_file = Path(__file__).resolve().parents[3] / "infrastructure/.env"
     settings = {**dotenv_values(env_file), **os.environ}
     if database_url := settings.get("DATABASE_URL"):
         return database_url
