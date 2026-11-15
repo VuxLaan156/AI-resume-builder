@@ -267,6 +267,9 @@ docker compose -f infrastructure/docker-compose.yml up -d --wait postgres
 
 Alembic uses the local Compose settings by default. Set `DATABASE_URL` in
 the shell to use a different SQLAlchemy PostgreSQL connection URL.
+FastAPI uses the same connection settings. With the API running,
+`GET /ready` checks that it can query the profiles table, while
+`GET /health` checks that the API process responds.
 The migrations create profiles first, then documents and review records,
 then job descriptions, templates, and resumes.
 
