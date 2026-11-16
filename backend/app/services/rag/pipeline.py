@@ -98,6 +98,12 @@ def hybrid_search(
         )
         semantic = [by_point_id[point_id] for point_id in point_ids if point_id in by_point_id]
 
+    return rank_hybrid(query, lexical, semantic)
+
+
+def rank_hybrid(
+    query: str, lexical: list[SearchChunk], semantic: list[SearchChunk]
+) -> list[SearchChunk]:
     scores: dict[UUID, float] = defaultdict(float)
     candidates: dict[UUID, SearchChunk] = {}
     for ranking in (lexical, semantic):
