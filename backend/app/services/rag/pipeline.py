@@ -58,13 +58,18 @@ def index_document(session: Session, document: Document, source: Path) -> None:
     document.processing_error = None
 
 
-def hybrid_search(session: Session, user_id: UUID, query: str) -> list[SearchChunk]:
-    rows = session.scalars(
+def hybrid_search(
+    session: Session, user_id: UUID, query: str, *, category: str | None = None
+) -> list[SearchChunk]:
+    statement = (
         select(DocumentChunk)
         .join(Document, DocumentChunk.document_id == Document.id)
         .where(Document.user_id == user_id, Document.processing_status == "completed")
         .order_by(DocumentChunk.document_id, DocumentChunk.chunk_order)
-    ).all()
+    )
+    if category is not None:
+        statement = statement.where(Document.category == category)
+    rows = session.scalars(statement).all()
     if not rows:
         return []
 

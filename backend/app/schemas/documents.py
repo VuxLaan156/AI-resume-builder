@@ -20,6 +20,7 @@ class DocumentRead(BaseModel):
 
 class DocumentSearch(BaseModel):
     query: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+    category: DocumentCategory | None = None
 
 
 class ChunkRead(BaseModel):

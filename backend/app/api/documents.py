@@ -107,4 +107,4 @@ def index_uploaded_document(
 
 @router.post("/search", response_model=list[ChunkRead])
 def search_documents(data: DocumentSearch, session: DatabaseSession, user: CurrentUser):
-    return hybrid_search(session, user.id, data.query)
+    return hybrid_search(session, user.id, data.query, category=data.category)
