@@ -1,13 +1,15 @@
 from pathlib import Path
 from typing import Annotated
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pymupdf
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from sqlalchemy import select
 
 from ..models.documents import Document
-from ..schemas.documents import DocumentCategory, DocumentRead
+from ..schemas.documents import ChunkRead, DocumentCategory, DocumentRead, DocumentSearch
 from ..services.extractors import EXTRACTORS
+from ..services.rag.pipeline import hybrid_search, index_document
 from .dependencies import DatabaseSession
 from .profiles import CurrentUser
 
@@ -77,3 +79,32 @@ def upload_document(
         path.unlink(missing_ok=True)
         raise
     return result
+
+
+@router.post("/{document_id}/index", response_model=DocumentRead)
+def index_uploaded_document(
+    document_id: UUID, session: DatabaseSession, user: CurrentUser
+) -> DocumentRead:
+    document = session.scalar(
+        select(Document)
+        .where(Document.id == document_id, Document.user_id == user.id)
+        .with_for_update()
+    )
+    if document is None:
+        raise HTTPException(status_code=404, detail="Document not found")
+    if document.processing_status != "completed":
+        source = (UPLOAD_DIRECTORY / document.file_path).resolve()
+        if source.parent != UPLOAD_DIRECTORY.resolve() or not source.is_file():
+            raise HTTPException(status_code=404, detail="Document file not found")
+        try:
+            index_document(session, document, source)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail="Document could not be indexed") from exc
+    result = DocumentRead.model_validate(document)
+    session.commit()
+    return result
+
+
+@router.post("/search", response_model=list[ChunkRead])
+def search_documents(data: DocumentSearch, session: DatabaseSession, user: CurrentUser):
+    return hybrid_search(session, user.id, data.query)

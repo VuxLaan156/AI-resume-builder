@@ -29,3 +29,16 @@ class Document(Base):
     )
     processing_status: Mapped[str] = mapped_column(Text, server_default="pending")
     processing_error: Mapped[str | None] = mapped_column(Text)
+
+
+class DocumentChunk(Base):
+    __tablename__ = "document_chunks"
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, server_default=text("gen_random_uuid()"))
+    document_id: Mapped[UUID] = mapped_column(
+        ForeignKey("documents.id", ondelete="CASCADE")
+    )
+    chunk_order: Mapped[int]
+    chunk_content: Mapped[str] = mapped_column(Text)
+    page_number: Mapped[int | None]
+    qdrant_point_id: Mapped[UUID | None] = mapped_column(unique=True)

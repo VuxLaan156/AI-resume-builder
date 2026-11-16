@@ -1,6 +1,16 @@
-from langchain_huggingface import HuggingFaceEmbeddings
+from __future__ import annotations
 
-embedder = HuggingFaceEmbeddings(
-    model_name = 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2',
-)
-#vectors = embedder.embed_documents([chunk.text for chunk in chunks])
+from functools import cache
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from langchain_huggingface import HuggingFaceEmbeddings
+
+
+@cache
+def get_embedder() -> HuggingFaceEmbeddings:
+    from langchain_huggingface import HuggingFaceEmbeddings
+
+    return HuggingFaceEmbeddings(
+        model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    )

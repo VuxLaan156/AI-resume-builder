@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 import re
 from collections.abc import Sequence
 from functools import cache
+from typing import TYPE_CHECKING
 from unicodedata import normalize
 
 from rank_bm25 import BM25Plus
-from sentence_transformers import CrossEncoder
+if TYPE_CHECKING:
+    from sentence_transformers import CrossEncoder
 
 from ..DocumentExtractor import TextBlock
 
@@ -13,6 +17,8 @@ def _tokenize(text: str) -> list[str]:
 
 @cache
 def _get_reranker() -> CrossEncoder:
+    from sentence_transformers import CrossEncoder
+
     return CrossEncoder("BAAI/bge-reranker-v2-m3")
 
 def retrieve_chunks(
@@ -25,7 +31,11 @@ def retrieve_chunks(
     """Rerank lexical matches from chunks already scoped to the current user."""
     if not 0 < top_k <= candidate_k:
         raise ValueError("Expected 0 < top_k <= candidate_k")
+    indices = lexical_indices(query, chunks, candidate_k)
+    return rerank_chunks(query, [chunks[index] for index in indices], top_k)
 
+
+def lexical_indices(query: str, chunks: Sequence[TextBlock], limit: int) -> list[int]:
     query_tokens = _tokenize(query)
     if not query_tokens or not chunks:
         return []
@@ -41,8 +51,13 @@ def retrieve_chunks(
 
     scores = BM25Plus(corpus).get_scores(query_tokens)
     matching_indices.sort(key=lambda index: scores[index], reverse=True)
-    candidates = [chunks[index] for index in matching_indices[:candidate_k]]
+    return matching_indices[:limit]
+
+
+def rerank_chunks[T: TextBlock](query: str, candidates: Sequence[T], limit: int) -> list[T]:
+    if not candidates:
+        return []
     ranking = _get_reranker().rank(
-        query, [chunk.text for chunk in candidates], top_k=top_k
+        query, [chunk.text for chunk in candidates], top_k=limit
     )
     return [candidates[result["corpus_id"]] for result in ranking]

@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, StringConstraints
 
 DocumentCategory = Literal["personal", "job_description"]
 ProcessingStatus = Literal["pending", "processing", "completed", "failed"]
@@ -16,3 +16,16 @@ class DocumentRead(BaseModel):
     category: DocumentCategory
     processing_status: ProcessingStatus
     uploaded_at: datetime
+
+
+class DocumentSearch(BaseModel):
+    query: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+
+
+class ChunkRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    chunk_id: UUID
+    document_id: UUID
+    text: str
+    page_number: int | None
