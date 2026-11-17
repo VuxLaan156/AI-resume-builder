@@ -7,6 +7,7 @@ from .api.documents import router as documents_router
 from .api.education import router as education_router
 from .api.experience import router as experience_router
 from .api.health import router as health_router
+from .api.job_descriptions import router as job_descriptions_router
 from .api.profiles import router as profiles_router
 from .api.projects import router as projects_router
 from .api.skills import router as skills_router
@@ -31,3 +32,4 @@ app.include_router(experience_router)
 app.include_router(certifications_router)
 app.include_router(achievements_router)
 app.include_router(documents_router)
+app.include_router(job_descriptions_router)

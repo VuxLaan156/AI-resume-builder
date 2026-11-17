@@ -1,5 +1,6 @@
 from decimal import Decimal
 from typing import Annotated, Literal, Self
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, StringConstraints, model_validator
 
@@ -49,3 +50,16 @@ class JDAnalysis(BaseModel):
     education_requirements: list[Qualification] = Field(default_factory=list)
     certification_requirements: list[Qualification] = Field(default_factory=list)
     language_requirements: list[Qualification] = Field(default_factory=list)
+
+
+class JDAnalysisRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    document_id: UUID | None = None
+    text: NonBlank | None = None
+
+    @model_validator(mode="after")
+    def validate_source(self) -> Self:
+        if (self.document_id is None) == (self.text is None):
+            raise ValueError("Provide exactly one of document_id or text")
+        return self
